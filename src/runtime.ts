@@ -51,7 +51,7 @@ export function validateRuntimePayload(
     };
   }
 
-  validateNode(payload, schema, '', errors);
+  validateNode(payload, schema, '', errors, new Set<object>(), 0);
 
   return {
     valid: errors.length === 0,
@@ -63,8 +63,14 @@ function validateNode(
   val: unknown,
   schema: JSONSchema,
   path: string,
-  errors: RuntimeValidationResult['errors']
+  errors: RuntimeValidationResult['errors'],
+  visited = new Set<object>(),
+  depth = 0
 ): void {
+  if (!schema || typeof schema !== 'object' || depth > 20 || visited.has(schema)) {
+    return;
+  }
+  visited.add(schema);
   // 1. Const check
   if (schema.const !== undefined && val !== schema.const) {
     errors.push({
@@ -179,7 +185,7 @@ function validateNode(
     }
     if (schema.items && !Array.isArray(schema.items)) {
       val.forEach((item, index) => {
-        validateNode(item, schema.items as JSONSchema, `${path}[${index}]`, errors);
+        validateNode(item, schema.items as JSONSchema, `${path}[${index}]`, errors, visited, depth + 1);
       });
     }
   }
@@ -221,7 +227,7 @@ function validateNode(
     for (const [key, propVal] of Object.entries(obj)) {
       const propSchema = properties[key];
       if (propSchema) {
-        validateNode(propVal, propSchema, path ? `${path}.${key}` : key, errors);
+        validateNode(propVal, propSchema, path ? `${path}.${key}` : key, errors, visited, depth + 1);
       }
     }
   }

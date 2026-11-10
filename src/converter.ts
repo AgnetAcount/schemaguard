@@ -34,8 +34,8 @@ export function detectFormat(data: unknown): ToolFormat {
     return 'anthropic';
   }
 
-  // MCP Tool format: { name: '...', inputSchema: { ... } }
-  if (typeof obj.name === 'string' && obj.inputSchema && typeof obj.inputSchema === 'object') {
+  // MCP Tool format: { name: '...', inputSchema: ... }
+  if (typeof obj.name === 'string' && 'inputSchema' in obj) {
     return 'mcp';
   }
 
@@ -84,10 +84,14 @@ export function normalizeToUniversal(data: unknown, formatOverride?: ToolFormat)
     }
 
     case 'mcp': {
+      let inputSchema = obj.inputSchema as JSONSchema;
+      if (inputSchema === undefined || inputSchema === null) {
+        inputSchema = { type: 'object', properties: {} };
+      }
       return {
         name: String(obj.name || 'unnamed_tool'),
         description: String(obj.description || ''),
-        parameters: (obj.inputSchema as JSONSchema) || { type: 'object', properties: {} }
+        parameters: inputSchema
       };
     }
 
@@ -125,11 +129,30 @@ export function normalizeToUniversal(data: unknown, formatOverride?: ToolFormat)
   }
 }
 
+function safeCloneSchema(schema: JSONSchema, seen = new WeakMap<object, unknown>()): JSONSchema {
+  if (!schema || typeof schema !== 'object') {
+    return schema;
+  }
+  if (seen.has(schema as object)) {
+    return { type: 'object', description: '[Circular Reference]' };
+  }
+  const copy: Record<string, unknown> = Array.isArray(schema) ? ([] as unknown as Record<string, unknown>) : {};
+  seen.set(schema as object, copy);
+  for (const [key, val] of Object.entries(schema)) {
+    if (val && typeof val === 'object') {
+      copy[key] = safeCloneSchema(val as JSONSchema, seen);
+    } else {
+      copy[key] = val;
+    }
+  }
+  return copy as JSONSchema;
+}
+
 /**
  * Clean and normalize a JSON schema ensuring deep clone and provider compatibility.
  */
 function cleanSchema(schema: JSONSchema, targetFormat: ToolFormat, options?: { strict?: boolean }): JSONSchema {
-  const cloned = JSON.parse(JSON.stringify(schema)) as JSONSchema;
+  const cloned = safeCloneSchema(schema);
 
   if (targetFormat === 'openai' && options?.strict) {
     // OpenAI structured outputs strict mode requirements:

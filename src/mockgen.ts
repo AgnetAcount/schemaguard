@@ -33,8 +33,15 @@ export function generateMock(
 
 function generateObjectMock(
   schema: JSONSchema,
-  mode: MockMode
+  mode: MockMode,
+  visited = new Set<object>(),
+  depth = 0
 ): Record<string, unknown> {
+  if (depth > 12 || visited.has(schema)) {
+    return {};
+  }
+  visited.add(schema);
+
   const result: Record<string, unknown> = {};
   const properties = schema.properties || {};
   const required = new Set(Array.isArray(schema.required) ? schema.required : []);
@@ -45,7 +52,7 @@ function generateObjectMock(
       continue;
     }
 
-    result[key] = generateValueMock(key, prop, mode);
+    result[key] = generateValueMock(key, prop, mode, visited, depth + 1);
   }
 
   return result;
@@ -54,8 +61,14 @@ function generateObjectMock(
 function generateValueMock(
   keyName: string,
   schema: JSONSchema,
-  mode: MockMode
+  mode: MockMode,
+  visited = new Set<object>(),
+  depth = 0
 ): unknown {
+  if (!schema || typeof schema !== 'object' || depth > 12 || visited.has(schema)) {
+    return 'mock_value';
+  }
+
   // 1. Const or Default
   if (schema.const !== undefined) {
     return schema.const;
@@ -87,10 +100,10 @@ function generateValueMock(
       return mode === 'edge' ? false : true;
 
     case 'array':
-      return generateArrayMock(keyName, schema, mode);
+      return generateArrayMock(keyName, schema, mode, visited, depth + 1);
 
     case 'object':
-      return generateObjectMock(schema, mode);
+      return generateObjectMock(schema, mode, visited, depth + 1);
 
     case 'null':
       return null;
@@ -172,7 +185,9 @@ function generateNumberMock(
 function generateArrayMock(
   keyName: string,
   schema: JSONSchema,
-  mode: MockMode
+  mode: MockMode,
+  visited = new Set<object>(),
+  depth = 0
 ): unknown[] {
   if (!schema.items || Array.isArray(schema.items)) {
     return ['item_1'];
@@ -183,7 +198,7 @@ function generateArrayMock(
 
   const arr: unknown[] = [];
   for (let i = 0; i < count; i++) {
-    arr.push(generateValueMock(`${keyName}_item`, itemSchema, mode));
+    arr.push(generateValueMock(`${keyName}_item`, itemSchema, mode, visited, depth + 1));
   }
   return arr;
 }

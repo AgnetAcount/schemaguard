@@ -5,6 +5,8 @@
 
 export * from './types.js';
 export * from './validator.js';
+export * from './linter.js';
+export * from './rules/index.js';
 export * from './converter.js';
 export * from './mockgen.js';
 export * from './runtime.js';

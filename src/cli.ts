@@ -14,7 +14,7 @@ import { validateRuntimePayload } from './runtime.js';
 import { formatLintResult, formatRuntimeResult, formatGitHubAnnotations } from './reporter.js';
 import { ToolFormat } from './types.js';
 
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 
 function printHelp(): void {
   console.log(`

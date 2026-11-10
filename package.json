@@ -1,6 +1,6 @@
 {
   "name": "schemaguard",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Zero-dependency schema validator, drift detector, and contract testing toolkit for AI agent tool definitions (OpenAI, Anthropic, Gemini, MCP)",
   "keywords": [
     "ai",
