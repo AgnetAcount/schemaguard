@@ -1,0 +1,28 @@
+{
+  "name": "semantic_code_search",
+  "description": "Performs neural vector and keyword hybrid search across indexed git repository source trees.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Natural language or symbol search term to locate in codebase"
+      },
+      "max_results": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 50,
+        "default": 10,
+        "description": "Maximum number of code snippets and references to return"
+      },
+      "file_extensions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Optional list of file extensions to constrain the search, e.g. ['.ts', '.rs', '.py']"
+      }
+    },
+    "required": ["query"]
+  }
+}

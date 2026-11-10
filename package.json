@@ -1,0 +1,58 @@
+{
+  "name": "schemaguard",
+  "version": "0.1.0",
+  "description": "Zero-dependency schema validator, drift detector, and contract testing toolkit for AI agent tool definitions (OpenAI, Anthropic, Gemini, MCP)",
+  "keywords": [
+    "ai",
+    "agent",
+    "tool-calling",
+    "function-calling",
+    "json-schema",
+    "openai",
+    "anthropic",
+    "gemini",
+    "mcp",
+    "model-context-protocol",
+    "validator",
+    "contract-testing",
+    "typegen",
+    "mockgen",
+    "cli"
+  ],
+  "author": "Agnet Software Corp. <https://github.com/AgnetAcount>",
+  "license": "MIT",
+  "homepage": "https://github.com/AgnetAcount/schemaguard#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgnetAcount/schemaguard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AgnetAcount/schemaguard/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "schemaguard": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs",
+    "prepare": "npm run build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

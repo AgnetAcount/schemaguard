@@ -1,0 +1,21 @@
+{
+  "name": "execute_readonly_query",
+  "description": "Execute sanitized read-only SQL queries against PostgreSQL relational replica cluster.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "sql": {
+        "type": "string",
+        "description": "Sanitized SELECT SQL statement to execute"
+      },
+      "timeout_ms": {
+        "type": "integer",
+        "minimum": 100,
+        "maximum": 30000,
+        "default": 5000,
+        "description": "Query execution deadline timeout in milliseconds"
+      }
+    },
+    "required": ["sql"]
+  }
+}

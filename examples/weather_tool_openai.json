@@ -1,0 +1,30 @@
+{
+  "type": "function",
+  "function": {
+    "name": "get_live_weather",
+    "description": "Fetch real-time atmospheric weather metrics, temperature, and 5-day forecasts for global cities.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string",
+          "description": "Target metropolis or municipality name, e.g. London, Tokyo, New York"
+        },
+        "days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 3,
+          "description": "Number of forecast days forward (1 to 5)"
+        },
+        "units": {
+          "type": "string",
+          "enum": ["metric", "imperial"],
+          "default": "metric",
+          "description": "Temperature units format: metric (Celsius) or imperial (Fahrenheit)"
+        }
+      },
+      "required": ["city"]
+    }
+  }
+}
